@@ -70,4 +70,21 @@ public class SensorReadingController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reading);
     }
+
+
+@GetMapping("/latest")
+public ResponseEntity<?> getLatestReading(
+        @PathVariable("farmId") String farmId) {
+
+    if (!VALID_FARMS.contains(farmId)) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Farm not found"));
+    }
+
+    return repository.findLatestByFarmId(farmId)
+            .<ResponseEntity<?>>map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "No readings found for this farm")));
+}
+
 }
