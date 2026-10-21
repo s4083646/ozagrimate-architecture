@@ -1,0 +1,839 @@
+{
+  "info": {
+    "name": "OzAgriMate API",
+    "description": "Assignment 4 REST API tests. Start the services first (8081 Farm & Device, 8082 Monitoring & Alert, 8083 AI & Irrigation), then run the folders in order. Each request has automatic status-code checks.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Monitoring & Alert Service (Role C)",
+      "item": [
+        {
+          "name": "POST reading - valid (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{monitoringUrl}}/farms/farm-001/readings",
+              "host": [
+                "{{monitoringUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "readings"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"readingId\": \"reading-001\",\n  \"deviceId\": \"sensor-001\",\n  \"soilMoisture\": 18.4,\n  \"timestamp\": \"2026-10-19T03:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Reading saved\", () => pm.expect(pm.response.json().readingId).to.eql(\"reading-001\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST reading - duplicate ID (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{monitoringUrl}}/farms/farm-001/readings",
+              "host": [
+                "{{monitoringUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "readings"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"readingId\": \"reading-001\",\n  \"deviceId\": \"sensor-001\",\n  \"soilMoisture\": 18.4,\n  \"timestamp\": \"2026-10-19T03:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST reading - impossible moisture (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{monitoringUrl}}/farms/farm-001/readings",
+              "host": [
+                "{{monitoringUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "readings"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"readingId\": \"reading-002\",\n  \"deviceId\": \"sensor-001\",\n  \"soilMoisture\": 150,\n  \"timestamp\": \"2026-10-19T03:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST reading - unknown farm (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{monitoringUrl}}/farms/farm-999/readings",
+              "host": [
+                "{{monitoringUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-999",
+                "readings"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"readingId\": \"reading-003\",\n  \"deviceId\": \"sensor-001\",\n  \"soilMoisture\": 18.4,\n  \"timestamp\": \"2026-10-19T03:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET latest reading (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{monitoringUrl}}/farms/farm-001/readings/latest",
+              "host": [
+                "{{monitoringUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "readings",
+                "latest"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET latest reading - unknown farm (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{monitoringUrl}}/farms/farm-999/readings/latest",
+              "host": [
+                "{{monitoringUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-999",
+                "readings",
+                "latest"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET alerts (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{monitoringUrl}}/farms/farm-001/alerts",
+              "host": [
+                "{{monitoringUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "alerts"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns an array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET alerts - unknown farm (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{monitoringUrl}}/farms/farm-999/alerts",
+              "host": [
+                "{{monitoringUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-999",
+                "alerts"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AI & Irrigation Service (Role B)",
+      "item": [
+        {
+          "name": "API 6 POST recommendation - valid (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations"
+              ]
+            },
+            "description": "farm-001 is configured as a simulated weather outage, so the forecast comes from the cache. If the Monitoring service is running, the reading comes from it (reading-001, 18.4).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cropType\": \"wheat\",\n  \"requestedBy\": \"farmer-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.collectionVariables.set(\"recId\", r.recommendationId);",
+                  "pm.test(\"Starts as PENDING_APPROVAL (ADR-07)\", () => pm.expect(r.status).to.eql(\"PENDING_APPROVAL\"));",
+                  "pm.test(\"Uses cached weather during simulated outage (ADR-08)\", () => pm.expect(r.supportingData.weatherSource).to.eql(\"CACHED\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 6 POST recommendation - live weather, rain forecast (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-002/recommendations",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-002",
+                "recommendations"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cropType\": \"wheat\",\n  \"requestedBy\": \"farmer-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Live weather used\", () => pm.expect(r.supportingData.weatherSource).to.eql(\"LIVE\"));",
+                  "pm.test(\"Rain forecast so no irrigation\", () => pm.expect(r.action).to.eql(\"NO_IRRIGATION\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 6 POST recommendation - missing cropType (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestedBy\": \"farmer-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 6 POST recommendation - unknown farm (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-999/recommendations",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-999",
+                "recommendations"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cropType\": \"wheat\",\n  \"requestedBy\": \"farmer-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 7 GET recommendation (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations/{{recId}}",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations",
+                "{{recId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Still pending, not reviewed\", () => { const r = pm.response.json(); pm.expect(r.status).to.eql(\"PENDING_APPROVAL\"); pm.expect(r.reviewedBy).to.eql(null); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 7 GET recommendation - unknown ID (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations/rec-999",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations",
+                "rec-999"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 8 PUT approval - farmer role (403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "FARMER"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations/{{recId}}/approval",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations",
+                "{{recId}}",
+                "approval"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"APPROVED\",\n  \"reviewerId\": \"agro-07\",\n  \"comment\": \"Run after 6pm to reduce evaporation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 8 PUT approval - invalid decision (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "AGRONOMIST"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations/{{recId}}/approval",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations",
+                "{{recId}}",
+                "approval"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"MAYBE\",\n  \"reviewerId\": \"agro-07\",\n  \"comment\": \"Run after 6pm to reduce evaporation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 8 PUT approval - approve (200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "AGRONOMIST"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations/{{recId}}/approval",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations",
+                "{{recId}}",
+                "approval"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"APPROVED\",\n  \"reviewerId\": \"agro-07\",\n  \"comment\": \"Run after 6pm to reduce evaporation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Now APPROVED\", () => pm.expect(pm.response.json().status).to.eql(\"APPROVED\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 8 PUT approval - already reviewed (409)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "AGRONOMIST"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations/{{recId}}/approval",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations",
+                "{{recId}}",
+                "approval"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"APPROVED\",\n  \"reviewerId\": \"agro-07\",\n  \"comment\": \"Run after 6pm to reduce evaporation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 8 PUT approval - unknown ID (404)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "AGRONOMIST"
+              }
+            ],
+            "url": {
+              "raw": "{{irrigationUrl}}/farms/farm-001/recommendations/rec-999/approval",
+              "host": [
+                "{{irrigationUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "recommendations",
+                "rec-999",
+                "approval"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"APPROVED\",\n  \"reviewerId\": \"agro-07\",\n  \"comment\": \"Run after 6pm to reduce evaporation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Farm & Device Service (Role A)",
+      "item": [],
+      "description": "Role A: add POST /farms/{farmId}/devices and DELETE /farms/{farmId}/devices/{deviceId} here."
+    }
+  ],
+  "variable": [
+    {
+      "key": "deviceUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "monitoringUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "irrigationUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "recId",
+      "value": "rec-001"
+    }
+  ]
+}
