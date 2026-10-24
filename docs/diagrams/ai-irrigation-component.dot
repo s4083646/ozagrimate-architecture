@@ -1,0 +1,73 @@
+digraph G {
+  graph [rankdir=TB, fontname="Arial", fontsize=14, nodesep=0.45, ranksep=0.85, splines=spline, pad=0.3, newrank=true, bgcolor="white"];
+  node  [shape=box, style="rounded,filled", fontname="Arial", fontsize=12, margin="0.18,0.1", width=2.6, penwidth=1.3];
+  edge  [fontname="Arial", fontsize=10.5, color="#3b4252", arrowsize=0.75, penwidth=1.1];
+
+  title [shape=box, style=filled, fillcolor=white, color="#3b4252", fontsize=16, margin="0.3,0.12",
+         label=<<b>OzAgriMate - AI &amp; Irrigation Service<br/>C4 Component Diagram (Level 3)</b>>];
+
+  farmer [fillcolor="#dff3e0", color="#3c9a4a", label=<<b>Farmer</b><br/>[Person]<br/>Requests irrigation recommendations<br/>for their farm>];
+  agro   [fillcolor="#dff3e0", color="#3c9a4a", label=<<b>Agronomist</b><br/>[Person]<br/>Reviews and approves or rejects<br/>AI recommendations>];
+
+  gw [fillcolor="#ead9fb", color="#9b4dd8", style="rounded,filled,dashed", label=<<b>API Gateway</b><br/>[Container: Reverse Proxy / Load Balancer, proposed]<br/>Routes user requests to application services>];
+
+  subgraph cluster_ais {
+    label=<<b>AI &amp; Irrigation Service</b>  [Container: Java / Spring Boot, Port 8083]>;
+    labeljust=l; fontsize=13; style="dashed,filled"; fillcolor="#eef5ff"; color="#2563eb"; penwidth=1.8; margin=18;
+    node [fillcolor=white, color="#3b4252"];
+
+    ctrl  [label=<<b>Recommendation Controller</b><br/>[Component: Spring REST Controller]<br/><font color="#2563eb">Exposes the generate, retrieve<br/>and approval endpoints</font>>];
+    err   [label=<<b>API Exception Handler</b><br/>[Component: Spring RestControllerAdvice]<br/><font color="#2563eb">Maps errors to 400, 403, 404<br/>and 409 responses</font>>];
+    appr  [label=<<b>Approval Service</b><br/>[Component: Spring Service]<br/><font color="#2563eb">Checks agronomist role; allows only<br/>PENDING_APPROVAL to APPROVED/REJECTED</font>>];
+    rec   [label=<<b>Recommendation Service</b><br/>[Component: Spring Service]<br/><font color="#2563eb">Applies irrigation rules and creates<br/>PENDING_APPROVAL recommendations</font>>];
+    reg   [label=<<b>Farm Registry</b><br/>[Component: Spring Component]<br/><font color="#2563eb">Validates farm IDs<br/>(seeded in prototype)</font>>];
+    sens  [label=<<b>Sensor Data Client</b><br/>[Component: Spring RestClient]<br/><font color="#2563eb">Fetches latest soil moisture;<br/>fallback reading if unavailable</font>>];
+    wthr  [label=<<b>Weather Integration</b><br/>[Component: Spring Service]<br/><font color="#2563eb">Fetches forecasts; falls back to<br/>cache and records data age</font>>];
+    repo  [label=<<b>Recommendation Repository</b><br/>[Component: In-memory ConcurrentHashMap]<br/><font color="#2563eb">Stores recommendations<br/>and review details</font>>];
+  }
+
+  fd   [fillcolor=white, color="#2563eb", penwidth=2, label=<<b>Farm &amp; Device Service</b><br/>[Container: Spring Boot, Port 8081]<br/>Manages farms and registered<br/>IoT devices>];
+  mon  [fillcolor=white, color="#2563eb", penwidth=2, label=<<b>Monitoring &amp; Alert Service</b><br/>[Container: Spring Boot, Port 8082]<br/>Validates readings and provides<br/>the latest sensor data>];
+  wapi [fillcolor="#eceff3", color="#7a8494", label=<<b>Weather &amp; Climate Data Provider</b><br/>[External System]<br/>External API for forecasts<br/>and weather information>];
+  db   [fillcolor="#ead9fb", color="#9b4dd8", style="rounded,filled,dashed", label=<<b>Persistent Data Store</b><br/>[Container: PostgreSQL, proposed]<br/>Stores recommendation data<br/>(irrigation_schema)>];
+  ics  [fillcolor="#eceff3", color="#7a8494", label=<<b>Irrigation Control System</b><br/>[External System]<br/>External equipment executes<br/>irrigation commands>];
+
+  legend [shape=plaintext, style="", label=<
+    <table border="1" cellborder="0" cellspacing="2" cellpadding="3" bgcolor="#fff4c2" color="#c9a227">
+      <tr><td align="left"><b>Legend</b></td></tr>
+      <tr><td align="left">Green = person</td></tr>
+      <tr><td align="left">White = component inside AI &amp; Irrigation Service</td></tr>
+      <tr><td align="left">Blue border = other OzAgriMate container</td></tr>
+      <tr><td align="left">Purple dashed = proposed production infrastructure</td></tr>
+      <tr><td align="left">Grey = external system</td></tr>
+      <tr><td align="left">Dashed arrow = proposed or simulated interaction</td></tr>
+    </table>>];
+
+  { rank=same; title; farmer; agro; legend; }
+  { rank=same; ctrl; err; }
+  { rank=same; appr; rec; }
+  { rank=same; reg; sens; wthr; repo; }
+  { rank=same; fd; mon; wapi; db; ics; }
+
+  title -> farmer -> agro -> legend [style=invis];
+
+  farmer -> gw [label="Requests recommendation\n[HTTPS/JSON]"];
+  agro   -> gw [label="Retrieves and reviews\nrecommendations [HTTPS/JSON]"];
+  gw -> ctrl [label="Routes recommendation requests\n[POST / GET / PUT, HTTPS/JSON]"];
+
+  ctrl -> err  [style=dashed, label="  Errors\n  handled by", constraint=false];
+  ctrl -> rec  [label="Generates and retrieves\nrecommendations"];
+  ctrl -> appr [label="Submits review\ndecision"];
+  appr -> rec  [label="Loads\nrecommendation"];
+  rec -> reg   [label="Validates farm"];
+  rec -> sens  [label="Requests latest\nreading"];
+  rec -> wthr  [label="Requests\nforecast"];
+  rec -> repo  [label="Saves and finds\nrecommendations"];
+  appr -> repo [label="Saves review"];
+
+  reg  -> fd   [style=dashed, label="Retrieves farm and device\ninformation [HTTP/JSON] (proposed)"];
+  sens -> mon  [label="Retrieves latest sensor data\n[GET /readings/latest, HTTP/JSON]"];
+  wthr -> wapi [style=dashed, label="Requests weather forecasts\n[HTTPS/JSON, 3 s timeout] (simulated)"];
+  repo -> db   [style=dashed, label="Replaced by irrigation_schema\n[PostgreSQL/TLS] (proposed)"];
+  appr -> ics  [style=dashed, label="Sends approved irrigation\ncommands [HTTPS/JSON] (proposed)"];
+}
