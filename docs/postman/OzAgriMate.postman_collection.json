@@ -1,10 +1,278 @@
 {
   "info": {
     "name": "OzAgriMate API",
-    "description": "Assignment 4 REST API tests. Start the services first (8081 Farm & Device, 8082 Monitoring & Alert, 8083 AI & Irrigation), then run the folders in order. Each request has automatic status-code checks.",
+    "description": "Assignment 4 REST API tests for all 8 endpoints. Start all three services first (8081 Farm & Device, 8082 Monitoring & Alert, 8083 AI & Irrigation), then run the whole collection in order. Restart the services before re-running, since data is held in memory.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "Farm & Device Service (Role A)",
+      "item": [
+        {
+          "name": "API 4 POST device - valid (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{deviceUrl}}/farms/farm-001/devices",
+              "host": [
+                "{{deviceUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "devices"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"sensor-002\",\n  \"vendor\": \"AgriSense\",\n  \"sensorType\": \"SOIL_MOISTURE\",\n  \"protocol\": \"MQTT\",\n  \"location\": \"North Field\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Device is ACTIVE\", () => pm.expect(pm.response.json().status).to.eql(\"ACTIVE\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 4 POST device - duplicate (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{deviceUrl}}/farms/farm-001/devices",
+              "host": [
+                "{{deviceUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "devices"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"sensor-002\",\n  \"vendor\": \"AgriSense\",\n  \"sensorType\": \"SOIL_MOISTURE\",\n  \"protocol\": \"MQTT\",\n  \"location\": \"North Field\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 4 POST device - missing fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{deviceUrl}}/farms/farm-001/devices",
+              "host": [
+                "{{deviceUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "devices"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"sensor-003\",\n  \"vendor\": \"AgriSense\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 4 POST device - unknown farm (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{deviceUrl}}/farms/farm-999/devices",
+              "host": [
+                "{{deviceUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-999",
+                "devices"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"sensor-004\",\n  \"vendor\": \"AgriSense\",\n  \"sensorType\": \"SOIL_MOISTURE\",\n  \"protocol\": \"MQTT\",\n  \"location\": \"North Field\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 5 DELETE device - wrong farm (404)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{deviceUrl}}/farms/farm-002/devices/sensor-002",
+              "host": [
+                "{{deviceUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-002",
+                "devices",
+                "sensor-002"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 5 DELETE device - valid (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{deviceUrl}}/farms/farm-001/devices/sensor-002",
+              "host": [
+                "{{deviceUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "devices",
+                "sensor-002"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API 5 DELETE device - already deleted (404)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{deviceUrl}}/farms/farm-001/devices/sensor-002",
+              "host": [
+                "{{deviceUrl}}"
+              ],
+              "path": [
+                "farms",
+                "farm-001",
+                "devices",
+                "sensor-002"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
     {
       "name": "Monitoring & Alert Service (Role C)",
       "item": [
@@ -811,11 +1079,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "Farm & Device Service (Role A)",
-      "item": [],
-      "description": "Role A: add POST /farms/{farmId}/devices and DELETE /farms/{farmId}/devices/{deviceId} here."
     }
   ],
   "variable": [
