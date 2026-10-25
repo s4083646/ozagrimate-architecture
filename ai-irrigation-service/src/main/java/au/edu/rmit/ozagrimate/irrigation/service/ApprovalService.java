@@ -12,13 +12,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Human-in-the-loop approval (ADR-07). This is the only place a
- * recommendation's status can change, and only an agronomist can do it.
- *
- * Prototype: the caller's role comes from the X-User-Role header instead
- * of an authenticated token.
- */
+// ADR-07: only place the status can change, and only for agronomists.
+// role comes from the X-User-Role header for now (no real login in the prototype)
 @Service
 public class ApprovalService {
 

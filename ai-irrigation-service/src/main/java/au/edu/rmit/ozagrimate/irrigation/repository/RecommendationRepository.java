@@ -8,10 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * In-memory store for recommendations. Stands in for the proposed
- * Recommendation database in the production architecture.
- */
+// in-memory for the prototype (would be irrigation_schema in PostgreSQL)
 @Repository
 public class RecommendationRepository {
 
@@ -29,7 +26,7 @@ public class RecommendationRepository {
         return recommendation;
     }
 
-    /** Finds a recommendation only if it belongs to the given farm. */
+    // returns empty if the recommendation belongs to a different farm
     public Optional<Recommendation> findByFarmAndId(String farmId, String id) {
         return Optional.ofNullable(recommendations.get(id))
                 .filter(r -> farmId.equals(r.getFarmId()));

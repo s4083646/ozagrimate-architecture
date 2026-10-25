@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 
-/**
- * Turns service exceptions into HTTP status codes, using the same
- * {"error": "..."} body as the other OzAgriMate services.
- */
+// turns our exceptions into status codes, same {"error": "..."} body as the monitoring service
 @RestControllerAdvice
 public class ApiExceptionHandler {
 

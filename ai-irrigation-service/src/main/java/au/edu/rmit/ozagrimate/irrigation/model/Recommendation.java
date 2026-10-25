@@ -2,10 +2,7 @@ package au.edu.rmit.ozagrimate.irrigation.model;
 
 import java.time.Instant;
 
-/**
- * An AI-assisted irrigation recommendation. Field order matches the
- * API documentation so JSON responses read the same way.
- */
+// fields are in the same order as our API doc so the JSON matches
 public class Recommendation {
 
     private String recommendationId;
@@ -45,7 +42,7 @@ public class Recommendation {
         this.createdAt = createdAt;
     }
 
-    /** Records an agronomist's review. Only ApprovalService calls this. */
+    // only ApprovalService should call this
     public void recordReview(
             RecommendationStatus newStatus,
             String reviewer,

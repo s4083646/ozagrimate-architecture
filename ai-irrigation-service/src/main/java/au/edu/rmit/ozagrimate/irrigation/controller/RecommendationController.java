@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * REST endpoints for AI-assisted irrigation recommendations.
- * Errors are mapped to status codes by ApiExceptionHandler.
- */
+// API 6-8. errors are handled in ApiExceptionHandler
 @RestController
 @RequestMapping("/farms/{farmId}/recommendations")
 public class RecommendationController {
@@ -29,7 +26,7 @@ public class RecommendationController {
         this.approvalService = approvalService;
     }
 
-    /** API 6: generate a recommendation (201 Created). */
+    // API 6
     @PostMapping
     public ResponseEntity<Recommendation> generate(
             @PathVariable("farmId") String farmId,
@@ -39,7 +36,7 @@ public class RecommendationController {
                 .body(recommendationService.generate(farmId, request));
     }
 
-    /** API 7: retrieve a recommendation (200 OK). */
+    // API 7
     @GetMapping("/{id}")
     public ResponseEntity<Recommendation> get(
             @PathVariable("farmId") String farmId,
@@ -48,7 +45,7 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendationService.get(farmId, id));
     }
 
-    /** API 8: agronomist approves or rejects (200 OK). */
+    // API 8
     @PutMapping("/{id}/approval")
     public ResponseEntity<ApprovalResponse> review(
             @PathVariable("farmId") String farmId,

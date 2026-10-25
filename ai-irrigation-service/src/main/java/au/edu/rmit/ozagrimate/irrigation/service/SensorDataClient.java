@@ -9,12 +9,8 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-/**
- * Fetches the latest soil moisture reading from the Monitoring & Alert
- * Service (GET /farms/{farmId}/readings/latest). If that service is
- * unreachable or has no reading, a fixed fallback reading is used so the
- * prototype can still be demonstrated on its own.
- */
+// calls the monitoring service for the latest reading.
+// if it's not running we use a fallback reading so this service still works by itself
 @Component
 public class SensorDataClient {
 

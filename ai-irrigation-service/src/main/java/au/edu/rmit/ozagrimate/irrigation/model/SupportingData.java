@@ -1,6 +1,6 @@
 package au.edu.rmit.ozagrimate.irrigation.model;
 
-/** Inputs behind a recommendation, shown to the reviewing agronomist. */
+// the sensor + weather data the recommendation was based on
 public class SupportingData {
 
     private String readingId;

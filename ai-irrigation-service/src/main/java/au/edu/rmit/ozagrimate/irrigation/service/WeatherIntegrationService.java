@@ -13,18 +13,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Weather Integration component (ADR-08). All weather access goes through
- * here. It tries the external weather API and, if that fails, falls back
- * to the cached forecast and reports its age so stale data is visible.
- *
- * Prototype: the external API is simulated. Farms listed in
- * weather.simulated-outage-farms behave as if the API is down.
- */
+// ADR-08: all weather calls go through here. If the weather API is down we use the
+// cached forecast and record how old it is.
+// The API is simulated - farms in weather.simulated-outage-farms act like it's down
 @Service
 public class WeatherIntegrationService {
 
-    /** Cached forecasts older than this are flagged as stale. */
+    // older than this = stale
     public static final Duration STALE_AFTER = Duration.ofHours(6);
 
     private final Set<String> simulatedOutageFarms;
@@ -40,7 +35,7 @@ public class WeatherIntegrationService {
     WeatherIntegrationService(Set<String> simulatedOutageFarms, Clock clock) {
         this.simulatedOutageFarms = simulatedOutageFarms;
         this.clock = clock;
-        // Seed the cache as if the last successful fetch was 95 minutes ago.
+        // pretend the last good fetch was 95 mins ago
         Instant fetched = clock.instant().minus(Duration.ofMinutes(95));
         cache.put("farm-001", new CachedForecast(0.0, fetched));
         cache.put("farm-002", new CachedForecast(8.0, fetched));
@@ -63,7 +58,7 @@ public class WeatherIntegrationService {
         return forecast.ageMinutes() > STALE_AFTER.toMinutes();
     }
 
-    /** Stand-in for the real external weather API call. */
+    // fake weather API call for the prototype
     private double callExternalWeatherApi(String farmId) {
         return "farm-002".equals(farmId) ? 8.0 : 0.0;
     }

@@ -1,6 +1,6 @@
 package au.edu.rmit.ozagrimate.irrigation.model;
 
-/** Request body for PUT /farms/{farmId}/recommendations/{id}/approval. */
+// body for PUT .../approval
 public class ApprovalRequest {
 
     private String decision;

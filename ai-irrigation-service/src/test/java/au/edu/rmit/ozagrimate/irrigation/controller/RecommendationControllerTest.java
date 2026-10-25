@@ -28,7 +28,7 @@ class RecommendationControllerTest {
     void setUp() {
         RecommendationRepository repository = new RecommendationRepository();
         FarmRegistry farms = new FarmRegistry();
-        // Port 1 refuses connections, so the client uses its fallback reading.
+        // nothing runs on port 1 so it uses the fallback reading
         SensorDataClient sensors = new SensorDataClient("http://localhost:1", 500);
         WeatherIntegrationService weather = new WeatherIntegrationService(Set.of("farm-001"));
         RecommendationService recommendations =
@@ -46,7 +46,7 @@ class RecommendationControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    // ---- API 6: POST ----
+    // API 6
 
     @Test
     void shouldCreatePendingRecommendationUsingCachedWeather() throws Exception {
@@ -93,7 +93,7 @@ class RecommendationControllerTest {
                 .andExpect(jsonPath("$.error").value("Farm not found"));
     }
 
-    // ---- API 7: GET ----
+    // API 7
 
     @Test
     void shouldGetRecommendationWithEmptyReviewFields() throws Exception {
@@ -118,7 +118,7 @@ class RecommendationControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ---- API 8: PUT ----
+    // API 8
 
     @Test
     void shouldApprovePendingRecommendation() throws Exception {
