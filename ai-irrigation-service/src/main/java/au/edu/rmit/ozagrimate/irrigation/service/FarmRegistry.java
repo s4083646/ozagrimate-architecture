@@ -5,10 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-/**
- * Known farms for the prototype. Uses the same seeded IDs as the other
- * services; in production this would come from the Farm & Device Service.
- */
+// same farm IDs as the other services. In production this would call the Farm & Device Service
 @Component
 public class FarmRegistry {
 

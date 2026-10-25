@@ -9,11 +9,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Generates irrigation recommendations. The prototype uses deterministic
- * rules in place of a trained AI model. Every recommendation is created
- * as PENDING_APPROVAL and must be reviewed by an agronomist (ADR-07).
- */
+// uses simple rules instead of a real model for the prototype.
+// every recommendation starts as PENDING_APPROVAL (ADR-07)
 @Service
 public class RecommendationService {
 

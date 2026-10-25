@@ -1,6 +1,6 @@
 package au.edu.rmit.ozagrimate.irrigation.model;
 
-/** Request body for POST /farms/{farmId}/recommendations. */
+// body for POST /farms/{farmId}/recommendations
 public class RecommendationRequest {
 
     private String cropType;

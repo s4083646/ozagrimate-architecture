@@ -2,7 +2,6 @@ package au.edu.rmit.ozagrimate.irrigation.model;
 
 import java.time.Instant;
 
-/** Response body for a successful approval or rejection. */
 public record ApprovalResponse(
         String recommendationId,
         RecommendationStatus status,
